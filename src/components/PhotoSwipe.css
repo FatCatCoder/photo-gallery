@@ -1,42 +1,3 @@
-/* #app { height: 100%; background: rgba(0, 0, 0, 0) !important; }
-html,
-body {
-  position: relative;
-  height: 100%;
-  background: rgba(0, 0, 0, 0) !important; 
-}
-
-body {
-    background: rgba(0, 0, 0, 0) !important; 
-    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
-    font-size: 14px;
-    color: #000;
-    margin: 0;
-    padding: 0;
-}
-
-.swiper {
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0) !important; 
-}
-
-.swiper-slide {
-  overflow: hidden;
-  background: rgba(0, 0, 0, 0) !important; 
-}
- */
-
- #app {
-    height: 100%;
-  }
-  html,
-  body {
-    position: relative;
-    height: 100%;
-  }
-
-  
   .swiper {
     width: 100%;
     height: 100%;
@@ -70,12 +31,22 @@ body {
     height: 300px;
     margin-left: auto;
     margin-right: auto;
+    /* background: rgba(28, 28, 30, 0.5) !important; */
+    /* backdrop-filter: blur(20px) !important; */
+  }
+
+  .swiper-wrapper{
+    /* background: rgba(28, 28, 30, 0.5) !important;
+    backdrop-filter: blur(20px) !important; */
   }
   
-  .swiper-slide {
+ /* .swiper-slide {
     background-size: cover;
     background-position: center;
-  }
+    margin: 0;
+    margin-right: 0 !important;
+    width: auto !important;
+  } */
   
   .mySwiper2 {
     display: flex;
@@ -83,39 +54,42 @@ body {
     height: 100%;
     max-height: 100%;
     width: 100%;
-    background: rgba(0,0,0,0.55);
+    /* background: rgba(28, 28, 30, 1); */
+    /* backdrop-filter: blur(2px)!important; */
     transition: height 0.45s;
   }
   .mySwiper2.mySwiper2powerslide{
-    /* height: 80%; */
     height: 100%;
   }
   
-  .mySwiper {
+  /* the thumbnail reel (defaults and hidden)  */
+  .thumbnailGallery {
     display: inline;
-    background: rgba(0,0,0,0.55);
+    background: rgba(28, 28, 30, 0.5) !important;
+    backdrop-filter: blur(20px)!important;
     position: absolute;
-    bottom: 50px;
-    height: 0%;
+    bottom: 0;
+    height: 8%;
     min-height:  0%;
     max-height: 20%;
     box-sizing: border-box;
     padding: 0;
     opacity: 0;
-    transition: height 0.45s linear, padding 0.45s linear, opacity 0.45s linear;
+    transition: opacity 0.45s linear;
   }
 
-  .mySwiper.mySwiperpowerslide{
-    height: 20%;
-    padding: 10px 0;
-    opacity: 1;
-    background: rgba(0,0,0,0.55);
+  /* the thumbnail reel when shown  */
+  .thumbnailGallery.thumbnailGalleryPowerSlide{
+    height: 8%;
+    padding: 0;
+    opacity: 1; 
   }
   
   .mySwiper .swiper-slide {
     width: 25%;
     height: 100%;
     opacity: 0.4;
+    margin: 0 !important;
   }
   
   .mySwiper .swiper-slide-thumb-active {
@@ -133,5 +107,44 @@ body {
     height: 100%;
     display: flex;
     flex-direction: column;
+    background: black !important;
   }
   
+  .thumbnailGallery .swiper-wrapper .swiper-slide.swiper-slide-visible.swiper-slide-active {
+    margin: 0;
+    opacity: 1 !important;
+  }
+  .thumbnailGallery .swiper-wrapper .mySwiper .swiper-slide-thumb-active {
+    opacity: 1 !important;
+  }
+
+  .thumbnailGallery .swiper-wrapper .swiper-slide {
+    background-size: cover;
+    background-position: center;
+    margin: 0;
+    margin-right: 0 !important;
+    width: 35px !important;
+    opacity: 0.3;
+  }
+  .thumbnailGallery .swiper-wrapper .swiper-slide.swiper-slide-thumb-active  {
+    opacity: 1 !important;
+    margin-left: 10px !important;
+    margin-right: 10px !important;
+  }
+
+  .toolbox{
+    opacity: 0;
+    transform: opacity 1s;
+    backdrop-filter: blur(20px);
+  }
+  .toolbox-show {
+    opacity: 1;
+  }
+
+  .ionToolbar{
+    background: rgba(0, 0, 0, 0.0) !important;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100vw;
+  }

@@ -1,0 +1,37 @@
+ion-tab-bar {
+    position: absolute;
+    bottom: 0;  
+    left: 0;  
+    width: 100%;  
+    background: transparent;
+    backdrop-filter: blur(20px);
+}
+
+ion-tab-button{
+    background: rgba(44, 44, 46, 0.5);
+}
+
+ion-tab-button:not(.tab-selected) ion-icon {
+    filter: invert(100%);
+}
+ion-tab-button:not(.tab-selected) ion-label {
+    filter: invert(100%);
+}
+
+@media (prefers-color-scheme: dark) {
+    ion-tab-button ion-icon {
+        color: rgb(147,147,148);
+    }
+    
+    ion-label{
+        color: rgb(147,147,148);
+    }
+
+    ion-tab-button.tab-selected  ion-icon{
+        color: #3880ff !important;
+    }
+    
+    ion-tab-button.tab-selected  ion-label{
+        color: #3880ff !important;
+    }
+  }

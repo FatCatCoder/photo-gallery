@@ -28,6 +28,8 @@
 	<string>For the user to modify and view photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>For the user to modify and view photos</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>For the user to pick photos based on location</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

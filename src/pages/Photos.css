@@ -3,7 +3,7 @@ ion-modal#example-modal {
     --min-width: 250px;
     /* --height: fit-content; */
     --border-radius: 6px;
-    --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+    /* --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4); */
     flex-direction: unset !important;
     background: transparent !important;
   }
@@ -11,7 +11,11 @@ ion-modal#example-modal {
     margin-bottom: 10px;
   }
 
-  div#ion-react-wrapper.ion-delegate-host {
-    flex-direction: unset !important;
-    background: transparent !important;
+  ion-grid {
+    --ion-grid-padding: 0px;
+    --ion-grid-column-padding: 0.5px;
+  }
+  
+  ion-col {
+    padding: 0.5px;
   }
