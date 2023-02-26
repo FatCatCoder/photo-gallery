@@ -24,23 +24,6 @@ const Tab1: React.FC = () => {
   useEffect(() => {
     loadSaved()
   }, [])
-
-  // useEffect(() => {
-  //   // console.log('media', media)
-  //   // console.log('Directory.Data', Directory.Data)
-  //   let loaded: string[] = [];
-  //   Filesystem.readdir({path: "", directory: Directory.Data}).then((files) => {
-  //     for(let file of files.files){
-  //       console.log('file', file)
-  //       loaded.push(Capacitor.convertFileSrc(file.uri))
-  //     }
-  //   })
-
-  //   console.log(loaded)
-
-  //   setMedia(loaded)
-  // }, [])
-
   
   const GetIsZoomed = () => isZoomed;
   let startY = 0;
@@ -71,8 +54,6 @@ const Tab1: React.FC = () => {
 
   useEffect(() => {
     if(isOpen){
-      let domNode = document.querySelector("#example-modal")
-
       gesture = createGesture({
         el: modal.current as Node,
         threshold: 15,
@@ -163,8 +144,8 @@ const Tab1: React.FC = () => {
     const wrapperAnimation = createAnimation()
       .addElement(root?.querySelector('.modal-wrapper')!)
       .keyframes([
-        { offset: 0, opacity: '0', transform: 'translateY(100%)' },
-        { offset: 1, opacity: '0.99', transform: 'translateY(0%)' },
+        { offset: 0, opacity: '0', transform: 'translateY(100%)', width: '0' },
+        { offset: 1, opacity: '0.99', transform: 'translateY(0%)', width: '100vw' },
       ]);
 
     return createAnimation()
@@ -201,6 +182,8 @@ const Tab1: React.FC = () => {
     event.detail.complete();
   }
 
+  
+
   return (
     <IonPage className='page'>
       <IonContent fullscreen scrollY={true}>
@@ -208,6 +191,7 @@ const Tab1: React.FC = () => {
           <IonRefresherContent></IonRefresherContent>
         </IonRefresher>
 
+        
           <IonGrid style={{overflowY: 'scroll'}}>
             <IonRow>
             {media.map((mediaURI, index) => {
@@ -217,8 +201,8 @@ const Tab1: React.FC = () => {
                     (mediaURI.endsWith(".jpeg"))? 
                     <IonImg src={mediaURI} onClick={() => toggleModal(index)} style={{objectFit: 'cover', width: 'auto', height: 'calc(33vw - 2px)'}} />
                     :
-                    <video style={{objectFit: 'cover', width: 'calc(33vw - 2px)', height: 'calc(33vw - 2px)', minHeight: 'calc(33vw - 2px)', minWidth: 'auto'}} controls>
-                      <source src={mediaURI} type="video/mp4" />
+                    <video preload="metadata" style={{objectFit: 'cover', width: 'calc(33vw - 2px)', height: 'calc(33vw - 2px)', minHeight: 'calc(33vw - 2px)', minWidth: 'auto'}} controls>
+                      <source src={mediaURI + '#t=0.5'} type="video/mp4" />
                     </video>
                   }
                 </IonCol>
@@ -236,19 +220,13 @@ const Tab1: React.FC = () => {
           leaveAnimation={leaveAnimation}
           onDidDismiss={onDidDismiss}
         >
-          <PhotoSwipe media={media} startIndex={openToStartIndex}></PhotoSwipe>
+
+          <PhotoSwipe media={media} startIndex={openToStartIndex} setIsOpen={setIsOpen} />
+
         </IonModal>
-
-        <IonButton onClick={async() => await importPhotos()}>
-            Add photos
-        </IonButton>
-
-        <IonButton onClick={async() => await loadSaved()}>
-            load photos
-        </IonButton>
         
         {/* End Page */}
-        <IonButton disabled={true} id="open-custom-dialog" expand="block" style={{opacity: 0, display: 'none'}}>
+        <IonButton disabled={true} id="open-custom-dialog" expand="block" style={{opacity: 0, display: 'block'}}>
           Open Custom Dialog
         </IonButton>
       </IonContent>

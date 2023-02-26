@@ -22,14 +22,37 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>For the User to take photos</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>For the user to pick photos based on location</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>For the user to modify and view photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>For the user to modify and view photos</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>For the user to pick photos based on location</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+		<string>bluetooth-central</string>
+		<string>bluetooth-peripheral</string>
+		<string>external-accessory</string>
+		<string>fetch</string>
+		<string>location</string>
+		<string>nearby-interaction</string>
+		<string>processing</string>
+		<string>push-to-talk</string>
+		<string>remote-notification</string>
+		<string>voip</string>
+	</array>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

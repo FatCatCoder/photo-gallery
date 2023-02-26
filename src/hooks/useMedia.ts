@@ -10,69 +10,49 @@ import { useGlobalStore } from '../GlobalStore';
 import { v4 as uuidv4 } from 'uuid';
 
 
+/*
+  This hook functions as both a service layer and state management
+  - main state lives in the global state store
+*/
+
 const MEDIA_DB_KEY = 'media';
+
 export function useMedia() {
     // State //
     const dbstorage = useGlobalStore(state => state.dbstorage);
-    const [photos, setPhotos] = useState<IUserPhoto[]>([]);
+
+    // list of file names + extension (this is how our DB stores the files as paths must be recreated on each app load due to apple's filesystem dynamic folder shifting with GUIDs)
     const media = useGlobalStore(state => state.media);
     const setMedia = useGlobalStore(state => state.setMedia);
 
-    // Lifecycle & effects //
-    useEffect(() => {
-        //loadSaved();
-      }, []);
-
     // Methods //
-    const deletePhoto = async (photo: IUserPhoto) => {
+    const deletePhoto = async (photoPath: string) => {
         // Remove this photo from the Photos reference data array
-        const newPhotos = photos.filter((p) => p.filepath !== photo.filepath);
+        const newPhotos = media.filter((p) => p !== photoPath);
       
         // Update photos array cache by overwriting the existing photo array
         await dbstorage?.set(MEDIA_DB_KEY, JSON.stringify(newPhotos));
       
         // delete photo file from filesystem
-        const filename = photo.filepath.substr(photo.filepath.lastIndexOf('/') + 1);
+        const filename = photoPath.substr(photoPath.lastIndexOf('/') + 1);
         await Filesystem.deleteFile({
           path: filename,
           directory: Directory.Data,
         });
-        setPhotos(newPhotos);
-      }
 
-    const savePicture = async (photo: Photo, fileName: string): Promise<IUserPhoto> => {
-        let base64Data: string;
-        // "hybrid" will detect Cordova or Capacitor;
-        if (isPlatform('hybrid')) {
-          const file = await Filesystem.readFile({
-            path: photo.path!,
-          });
-          base64Data = file.data;
-        } else {
-          base64Data = await base64FromPath(photo.webPath!);
+        // adjust our current media filepaths to just filenames fo saivng to the DB
+        let fixedNames = [];
+        for(let x of newPhotos) {
+          let fixedfilename = x.substr(x.lastIndexOf('/') + 1);
+          fixedNames.push(fixedfilename);
         }
-        const savedFile = await Filesystem.writeFile({
-          path: fileName,
-          data: base64Data,
-          directory: Directory.Data,
-        });
-      
-        if (isPlatform('hybrid')) {
-          // Display the new image by rewriting the 'file://' path to HTTP
-          // Details: https://ionicframework.com/docs/building/webview#file-protocol
-          return {
-            filepath: savedFile.uri,
-            webviewPath: Capacitor.convertFileSrc(savedFile.uri),
-          };
-        } else {
-          // Use webPath to display the new image instead of base64 since it's
-          // already loaded into memory
-          return {
-            filepath: fileName,
-            webviewPath: photo.webPath,
-          };
-        }
-      };
+
+        // set db to updated list
+        await dbstorage?.set(MEDIA_DB_KEY, JSON.stringify(fixedNames));
+
+        // set our media list to the useable filepaths we created, not filenames
+        setMedia(newPhotos);
+      }
 
       const getUseableImagePath = async (imgName: string) => {
         let path = await Filesystem.getUri({path: imgName, directory: Directory.Data});
@@ -80,7 +60,7 @@ export function useMedia() {
       }
 
       const loadSaved = async () => {
-        console.log("loading saved photos...")
+        // console.log("loading saved photos...")
         const value = await dbstorage?.get(MEDIA_DB_KEY);
         const photosInPreferences = (value ? JSON.parse(value) : []) as string[];
 
@@ -89,7 +69,7 @@ export function useMedia() {
           let useable = await getUseableImagePath(x);
           useablePaths.push(useable);
         }
-
+        
         setMedia(useablePaths);
       };
 

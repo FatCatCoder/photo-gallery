@@ -38,21 +38,16 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 import './App.css'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useGlobalStore } from './GlobalStore';
 import { useMedia } from './hooks/useMedia';
 
 setupIonicReact();
 
-const App: React.FC = () => 
-{
+const App: React.FC = () => {
   const db = useGlobalStore((state) => state.dbstorage);
   const { dbWasInitialized } = useSqlDb();
   const { importPhotos, importVideo } = useMedia();
-
-  useEffect(() => {
-    console.log('app useEffect');
-  }, [])
 
   const ImportVideo = async() => {
     await importVideo();
@@ -62,16 +57,13 @@ const App: React.FC = () =>
     await importPhotos();
   };
 
-  if(dbWasInitialized === false || db === null)
-  return <IonApp><IonSpinner /> Loading...</IonApp>
-
   return (
   <IonApp>
     <IonReactRouter>
       <IonTabs>
         <IonRouterOutlet>
           <Route exact path="/">
-            <Photos />
+            {(dbWasInitialized === false || db === null) ? <><IonSpinner /><h3>Loading...</h3></>: <Photos />}
           </Route>
         </IonRouterOutlet>
         <IonTabBar slot="bottom">

@@ -57,6 +57,7 @@
     /* background: rgba(28, 28, 30, 1); */
     /* backdrop-filter: blur(2px)!important; */
     transition: height 0.45s;
+    --swiper-navigation-color: transparent !important;
   }
   .mySwiper2.mySwiper2powerslide{
     height: 100%;
@@ -133,11 +134,14 @@
   }
 
   .toolbox{
+    display: none;
     opacity: 0;
     transform: opacity 1s;
     backdrop-filter: blur(20px);
   }
   .toolbox-show {
+    transform: opacity 1s;
+    display: block;
     opacity: 1;
   }
 
