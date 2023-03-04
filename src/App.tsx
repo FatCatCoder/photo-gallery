@@ -8,7 +8,7 @@ import {
   IonTabButton,
   IonTabs,
   IonSpinner,
-  setupIonicReact
+  setupIonicReact,
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { images, camera, videocam } from 'ionicons/icons';
@@ -42,6 +42,8 @@ import { useEffect, useState } from 'react';
 import { useGlobalStore } from './GlobalStore';
 import { useMedia } from './hooks/useMedia';
 
+import { SplashScreen } from '@capacitor/splash-screen';
+
 setupIonicReact();
 
 const App: React.FC = () => {
@@ -56,6 +58,17 @@ const App: React.FC = () => {
   const ImportPhotos = async () => {
     await importPhotos();
   };
+
+
+  useEffect(() => { 
+    const HideScreen = async () => {
+      if(dbWasInitialized && db != null && db != undefined)
+        await SplashScreen.hide();
+        console.log("app  did hide screen")
+    };
+    HideScreen()
+
+  }, [dbWasInitialized])
 
   return (
   <IonApp>

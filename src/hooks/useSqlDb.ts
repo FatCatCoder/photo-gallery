@@ -2,9 +2,10 @@ import { Drivers, Storage } from '@ionic/storage';
 import * as CordovaSQLiteDriver from 'localforage-cordovasqlitedriver';
 import React from 'react'
 import { useGlobalStore } from '../GlobalStore';
+import { book } from 'ionicons/icons';
 
 export function useSqlDb() {
-  const [dbWasInitialized, setdbWasInitialized] = React.useState(false);
+  const [dbWasInitialized, setdbWasInitialized] = React.useState<boolean>(false);
   const setdbstorage = useGlobalStore(state => state.setdbstorage);
 
   const dbstore = new Storage({

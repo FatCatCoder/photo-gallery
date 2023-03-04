@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Zoom, Navigation, Pagination, FreeMode, Thumbs, Virtual } from "swiper";
 import { Swiper, SwiperSlide, SwiperRef, useSwiper } from "swiper/react";
 import { Swiper as SwiperType } from "swiper/types";
-import { IonIcon, IonGrid, IonCol, IonRow, IonImg, IonToolbar, IonButton, IonButtons } from "@ionic/react";
+import { IonIcon, IonGrid, IonCol, IonRow, IonImg, IonToolbar, IonButton, IonButtons, IonSpinner } from "@ionic/react";
 import { chevronBackOutline, shareOutline, trashOutline } from 'ionicons/icons';
 import { isPlatform } from '@ionic/react';
 import { StatusBar, Style } from '@capacitor/status-bar';
@@ -37,25 +37,26 @@ export default function PhotoSwipe(props: any) {
     const [mainSwiper, setMainSwiper] = useState<SwiperType>();
     const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType>();
     const [activeIndex, setActiveIndex] = useState<number>(props.startIndex ?? 0);
-    const [isVirtual, setIsVirtual] = useState<boolean>(false);
-    const { deletePhoto } = useMedia();            
+    const [isOkayToView, setIsOkayToView] = useState<boolean>(false);
+
+    // const [zoomScale, setZoomScale] = useState<number>(1);
+    // const [lastTapAt, setLastTapAt] = useState<number>(Date.now());
+
+    const [lastTouchedAt, setLastTouchedAt] = useState<number>(Date.now());
+    const { deletePhoto } = useMedia(); 
 
     useEffect(() => {
         try {
-            // setMediaItems(props.media)
-            setActiveIndex(props.startIndex)
-            setIsVirtual(false)
+            setMediaItems(media)
+            setActiveIndex(props?.startIndex ?? 0)
+            setIsOkayToView(true)
 
         } catch (error) {
             console.log(error)  
         }
     }, [])
 
-    useEffect(() => {
-        setMediaItems(media)
-    }, [])
-
-    const onClick = (e: any) => {
+    const onClick = (swiper: SwiperType, event: MouseEvent | TouchEvent | PointerEvent) => {
         setShowToolbox(!showToolbox)
 
         if(!isPlatform("mobileweb") || !isPlatform("desktop")){
@@ -63,7 +64,23 @@ export default function PhotoSwipe(props: any) {
         }
     }
 
+    // const onDoubleTap = (swiper: SwiperType, event: MouseEvent | TouchEvent | PointerEvent) => {
+    //     setIsDoubleTapping(true);
+    //     console.log('double tap!')
+        
+    //     if(zoomScale == 1){
+    //         swiper.zoom.in();
+    //     }
+    //     else{
+    //         swiper.zoom.out();
+    //     }
+
+    //     setIsDoubleTapping(false);
+    // }
+
     const onZoomChange = (swiper: SwiperType, scale: number, imageEl: HTMLElement, slideEl: HTMLElement)  => {
+        //setZoomScale(scale)
+
         if(scale != 1){
             setIsZoomed(true)
         }  
@@ -76,12 +93,11 @@ export default function PhotoSwipe(props: any) {
         if(activeIndex != currswiper.activeIndex && !isThumbsSwiper){
             setActiveIndex(currswiper.activeIndex)
 
-            // fixes desync with thumbsSwiper active img color opacity class
+            // fixes de-sync with thumbsSwiper active img color opacity class
             if(thumbsSwiper != null && thumbsSwiper!=undefined && !thumbsSwiper.destroyed){
                 thumbsSwiper.activeIndex = currswiper.activeIndex;
                 thumbsSwiper.updateSlidesClasses();
-            }
-                
+            }  
         }
     }
 
@@ -92,15 +108,16 @@ export default function PhotoSwipe(props: any) {
           });
 
         if(value == true){
-            // if first photo and list has more, go next
+            // first photo and list has more, go next
             if(activeIndex == 0 && (mainSwiper?.slides?.length ?? 0) > 1){ 
                 mainSwiper?.slideNext()
             }
-            // if last photo and list has more, go prev
+            // last photo and list has more, go prev
             else if(activeIndex == ((mainSwiper?.slides?.length ?? 0) - 1) && (mainSwiper?.slides?.length ?? 0) > 1){ 
                 mainSwiper?.slidePrev()
             }
-            else if (mainSwiper?.slides?.length == 1){ // else no more photos, end modal
+            // no more photos, end modal
+            else if (mainSwiper?.slides?.length == 1){ 
                 props.setIsOpen(false);
             }
             else{
@@ -120,6 +137,11 @@ export default function PhotoSwipe(props: any) {
           files: [filehandle.uri]
         });
       }
+
+
+
+    if(!isOkayToView)
+        return <IonSpinner color={"medium"} style={{top: '50%', left: '45%'}}>Loading...</IonSpinner>
 
     return (
     <>
@@ -146,19 +168,20 @@ export default function PhotoSwipe(props: any) {
             style={{
                 background: 'transparent',
             }}
-            initialSlide={ props.startIndex ?? activeIndex ?? 0}
+            initialSlide={ activeIndex ?? 0}
             onSwiper={(x) => setMainSwiper(x)}
             effect={"slide"}
             slideToClickedSlide={true}
-            zoom={true}
+            zoom={{toggle: false}}
             thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
             navigation={true}
-            onClick={onClick}
-            modules={[Zoom, Navigation, Pagination, Thumbs, Virtual]}
+            modules={[Zoom, Navigation, Pagination, Thumbs]}
             onZoomChange={onZoomChange}
             onSlideChange={onSlideChange} 
+            onTap={onClick}
+            // onDoubleTap={onDoubleTap}
             className={`mySwiper2 ${showToolbox? "mySwiper2powerslide" : ""}`}
-            virtual={isVirtual}
+            
         >
             {mediaItems.map((x, y) =>
             {
@@ -168,9 +191,8 @@ export default function PhotoSwipe(props: any) {
                 (x.endsWith(".jpeg"))? 
                     <img src={x} loading="lazy" style={{objectFit: 'contain', width: 'auto', height: '100%'}} className={"swiper-zoom-target"} />
                     :
-                    // <video src={x} style={{objectFit: 'cover', width: 'auto', height: '100%'}} className={"swiper-zoom-target"}  /> 
-                    <video preload="metadata" style={{objectFit: 'cover', width: '100vw', height: 'auto', minHeight: 'auto', minWidth: '100vw'}} controls>
-                      <source src={x + + '#t=0.5'} type="video/mp4" />
+                    <video playsInline preload="metadata" style={{objectFit: 'cover', maxHeight: "100vh", maxWidth: '100vw', width: 'auto', height: 'auto', minHeight: 'auto', minWidth: 'auto'}} controls>
+                      <source src={x + '#t=0.5'} type="video/mp4" />
                     </video>
                 }
                 </SwiperSlide>
@@ -196,37 +218,38 @@ export default function PhotoSwipe(props: any) {
             style={{height: '100px'}}
             className={`thumbnailGallery ${showToolbox? "thumbnailGalleryPowerSlide" : ""}`}
             onSlideChange={(x) => onSlideChange(x, true)} 
-            onClick={(x) => {
-                //console.log('x.activeIndex', x.activeIndex)
-            }}
         >
             {mediaItems.map((x, y) =>
+            {
+                return (
+                <SwiperSlide key={x}
+                style={{height: '50px', position: 'relative', bottom: '0px', width: 'auto'}}
+                >
                 {
-                    return (
-                        <SwiperSlide key={x}
-                        style={{height: '50px', position: 'relative', bottom: '0px', width: 'auto'}}
-                        >
-                                {
-                                    (x.endsWith(".jpeg"))? 
-                                        <img src={x} loading="lazy" style={{objectFit: 'cover', width: 'auto', height: '100%'}} />
-                                        :
-                                        <video preload="metadata" style={{objectFit: 'cover', width: 'auto', height: '100%'}}>
-                                            <source src={x + + '#t=0.5'} type="video/mp4" />
-                                        </video>
-                                }
-                        </SwiperSlide>
-                    )
-                })}   
+                    (x.endsWith(".jpeg"))? 
+                        <img src={x} loading="lazy" style={{objectFit: 'cover', width: 'auto', height: '100%'}} />
+                        :
+                        <video preload="metadata" style={{objectFit: 'cover', width: 'auto', height: '100%'}}>
+                            <source src={x + '#t=0.5'} type="video/mp4" />
+                        </video>
+                }
+                </SwiperSlide>
+                )
+            })}   
                 
-                <div style={{position: 'absolute', bottom: '0', zIndex: '20'}} className={"ionToolbar"}>
-                    <IonButtons slot="start">
-                        <IonButton onClick={async() => await onSharePhoto(mediaItems[activeIndex])}><IonIcon icon={shareOutline}></IonIcon></IonButton>
-                    </IonButtons>
-                    
-                    <IonButtons slot="end">
-                        <IonButton onClick={async() => await onDeletePhoto(mediaItems[activeIndex])}><IonIcon icon={trashOutline}></IonIcon></IonButton>
-                    </IonButtons>
-                </div>
+            <div style={{position: 'absolute', bottom: '0', zIndex: '20'}} className={"ionToolbar"}>
+                <IonButtons slot="start">
+                    <IonButton onClick={async() => await onSharePhoto(mediaItems[activeIndex])}>
+                        <IonIcon icon={shareOutline}></IonIcon>
+                    </IonButton>
+                </IonButtons>
+                
+                <IonButtons slot="end">
+                    <IonButton onClick={async() => await onDeletePhoto(mediaItems[activeIndex])}><
+                        IonIcon icon={trashOutline}></IonIcon>
+                    </IonButton>
+                </IonButtons>
+            </div>
         </Swiper>
         </>
         }

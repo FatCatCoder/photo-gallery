@@ -1,4 +1,4 @@
-import { IonButton, IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonModal, IonItem, IonList, IonGrid, IonRow, IonCol, IonImg, GestureDetail, createAnimation, IonRefresher, IonRefresherContent, RefresherEventDetail } from '@ionic/react';
+import { IonButton, IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonModal, IonItem, IonList, IonGrid, IonRow, IonCol, IonImg, GestureDetail, createAnimation, IonRefresher, IonRefresherContent, RefresherEventDetail} from '@ionic/react';
 import { isPlatform } from '@ionic/react';
 import { useEffect, useRef, useState } from 'react';
 import PhotoSwipe from '../components/PhotoSwipe';
@@ -16,7 +16,8 @@ import { Directory, Filesystem } from '@capacitor/filesystem';
 
 const Tab1: React.FC = () => {
   const modal = useRef<HTMLIonModalElement>(null);
-  const [isOpen, setIsOpen] = useState(false);  
+  const [isOpen, setIsOpen] = useState(false);
+  const [modalIsLoaded, setmodalIsLoaded] = useState(false);  
   const [openToStartIndex, setOpenToStartIndex] = useState(0);  
   const isZoomed = useGlobalStore((state) => state.isZoomed)
   const { media, setMedia, loadSaved, importPhotos, importVideo} = useMedia();
@@ -67,11 +68,11 @@ const Tab1: React.FC = () => {
       gesture.enable();
     }
     else{
-      gesture?.destroy();
+     // gesture?.destroy();
     }
 
     return () => {
-      gesture?.destroy();
+      //gesture?.destroy();
     }
   }, [isOpen, isZoomed]);
 
@@ -145,7 +146,7 @@ const Tab1: React.FC = () => {
       .addElement(root?.querySelector('.modal-wrapper')!)
       .keyframes([
         { offset: 0, opacity: '0', transform: 'translateY(100%)', width: '0' },
-        { offset: 1, opacity: '0.99', transform: 'translateY(0%)', width: '100vw' },
+        { offset: 1, opacity: '1', transform: 'translateY(0%)', width: '100vw' },
       ]);
 
     return createAnimation()
@@ -211,6 +212,22 @@ const Tab1: React.FC = () => {
             </IonRow>
         </IonGrid>
 
+        {/* <IonModal ref={modal} isOpen={isOpen} enterAnimation={enterAnimation} 
+          onIonModalDidPresent={() => setmodalIsLoaded(true)}
+          onIonModalDidDismiss={() => setmodalIsLoaded(false)}
+          leaveAnimation={leaveAnimation}
+          onDidDismiss={onDidDismiss}>
+          <IonHeader>
+          </IonHeader>
+          <IonContent>
+
+
+            {modalIsLoaded && <PhotoSwipe startIndex={openToStartIndex} setIsOpen={setIsOpen} />}
+            
+            
+          </IonContent>
+        </IonModal> */}
+
         <IonModal 
           id="example-modal" 
           isOpen={isOpen} 
@@ -219,16 +236,16 @@ const Tab1: React.FC = () => {
           enterAnimation={enterAnimation} 
           leaveAnimation={leaveAnimation}
           onDidDismiss={onDidDismiss}
+          onIonModalDidPresent={() => setmodalIsLoaded(true)}
+          onIonModalDidDismiss={() => setmodalIsLoaded(false)}
         >
-
-          <PhotoSwipe media={media} startIndex={openToStartIndex} setIsOpen={setIsOpen} />
-
+          {modalIsLoaded && <PhotoSwipe media={media} startIndex={openToStartIndex} setIsOpen={setIsOpen} />}
         </IonModal>
         
-        {/* End Page */}
         <IonButton disabled={true} id="open-custom-dialog" expand="block" style={{opacity: 0, display: 'block'}}>
           Open Custom Dialog
         </IonButton>
+
       </IonContent>
     </IonPage>
   );
